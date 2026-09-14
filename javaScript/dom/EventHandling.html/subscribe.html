@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button onclick="change()" ondblclick="change2()">Subscribe</button>
+
+    <script>
+      function change() {
+        let x = document.getElementsByTagName("button")[0];
+        x.innerText = "subscribed";
+        console.log(x);
+      }
+      function change2() {
+        let x = document.getElementsByTagName("button")[0];
+        x.innerText = "subscribe";
+        console.log(x);
+      }
+      //toggle
+      function toggle() {
+        const button = document.querySelector("button");
+        if (button.textContent === "Subscribe") {
+          button.textContent = "Subscribed";
+        } else {
+          button.textContent = "Subscribe";
+        }
+      }
+    </script>
+  </body>
+</html>
