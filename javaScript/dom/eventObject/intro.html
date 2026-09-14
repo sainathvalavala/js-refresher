@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Event Object - Description & Practical Guide</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 24px;
+      background-color: #f9f9fb;
+    }
+    h1, h2, h3 { color: #1a202c; }
+    .section-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .badge {
+      background: #e2e8f0;
+      color: #3182ce;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+    }
+    th, td {
+      border: 1px solid #e2e8f0;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    th { background: #edf2f7; }
+    .demo-box {
+      background: #edf8ff;
+      border: 1px solid #bee3f8;
+      border-radius: 6px;
+      padding: 16px;
+      margin-top: 12px;
+    }
+    input[type="text"], button {
+      padding: 8px 12px;
+      font-size: 14px;
+      border-radius: 4px;
+      border: 1px solid #cbd5e0;
+      margin-right: 6px;
+    }
+    button {
+      background-color: #3182ce;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover { background-color: #2b6cb0; }
+    .console-box {
+      background: #2d3748;
+      color: #f7fafc;
+      padding: 12px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 13px;
+      margin-top: 10px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>JavaScript DOM Event Object</h1>
+
+  <!-- ================================================================= -->
+  <!-- PART 1: DESCRIPTION ABOUT EVENT OBJECT -->
+  <!-- ================================================================= -->
+  <div class="section-card">
+    <h2>1. What is the Event Object? (Description)</h2>
+    <p>
+      The <strong>Event Object</strong> (commonly written as <span class="badge">e</span> or <span class="badge">event</span>) 
+      is a built-in JavaScript object automatically created by the browser whenever an action happens on a web page 
+      (such as a button click, key press, text input, or mouse movement).
+    </p>
+    <p>
+      The browser automatically passes this object as the <strong>first argument</strong> to your event listener function.
+    </p>
+
+    <h3>Why do we need it?</h3>
+    <ul>
+      <li><strong>Identifies the Target:</strong> Tells you exactly which HTML element was clicked or modified.</li>
+      <li><strong>Contains User Data:</strong> Carries what the user typed, coordinates of the mouse, or which keyboard key was pressed.</li>
+      <li><strong>Controls Flow:</strong> Gives methods to cancel default browser behavior (like page reloads) and stop events from bubbling up.</li>
+    </ul>
+
+    <h3>Most Important Properties & Methods</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Property / Method</th>
+          <th>Type</th>
+          <th>What It Does</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge">e.target</span></td>
+          <td>Property</td>
+          <td>The actual element where the event originated (e.g. clicked button).</td>
+        </tr>
+        <tr>
+          <td><span class="badge">e.target.value</span></td>
+          <td>Property</td>
+          <td>The current text typed into an input or textarea.</td>
+        </tr>
+        <tr>
+          <td><span class="badge">e.type</span></td>
+          <td>Property</td>
+          <td>The type of event fired (e.g. <code>"click"</code>, <code>"submit"</code>, <code>"keydown"</code>).</td>
+        </tr>
+        <tr>
+          <td><span class="badge">e.key</span></td>
+          <td>Property</td>
+          <td>The character or name of the keyboard key pressed (e.g. <code>"Enter"</code>, <code>"a"</code>).</td>
+        </tr>
+        <tr>
+          <td><span class="badge">e.preventDefault()</span></td>
+          <td>Method</td>
+          <td>Stops the browser's default action (e.g., stops forms from reloading the page).</td>
+        </tr>
+        <tr>
+          <td><span class="badge">e.stopPropagation()</span></td>
+          <td>Method</td>
+          <td>Prevents the event from bubbling up to parent containers.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- ================================================================= -->
+  <!-- PART 2: PRACTICAL GUIDE & EXAMPLES -->
+  <!-- ================================================================= -->
+  <div class="section-card">
+    <h2>2. Practical Guide (Live Interactive Examples)</h2>
+
+    <!-- Practical 1: e.target.value -->
+    <h3>A. Reading Input Text (<span class="badge">e.target.value</span>)</h3>
+    <p>Used to capture live user typing in search bars and forms:</p>
+    <div class="demo-box">
+      <input type="text" id="nameInput" placeholder="Type your name here..." />
+      <div id="outputInput" class="console-box">Waiting for typing...</div>
+    </div>
+
+    <!-- Practical 2: e.preventDefault() -->
+    <h3>B. Preventing Page Refresh on Form Submit (<span class="badge">e.preventDefault()</span>)</h3>
+    <p>Without this, submitting a form refreshes the page and loses your data:</p>
+    <div class="demo-box">
+      <form id="userForm">
+        <input type="text" id="emailInput" placeholder="Enter email..." required />
+        <button type="submit">Submit Form</button>
+      </form>
+      <div id="outputForm" class="console-box">Submit the form to test e.preventDefault()...</div>
+    </div>
+
+    <!-- Practical 3: e.target vs e.currentTarget -->
+    <h3>C. Finding What Was Clicked (<span class="badge">e.target</span> vs <span class="badge">e.currentTarget</span>)</h3>
+    <p>Click anywhere in this container or on the buttons inside it:</p>
+    <div id="buttonContainer" class="demo-box" style="cursor: pointer;">
+      <p style="margin-top:0;"><strong>Parent Container (#buttonContainer)</strong></p>
+      <button id="btn1">Button 1</button>
+      <button id="btn2">Button 2</button>
+      <span style="font-size:13px; color:#666;">(or click this empty space)</span>
+      <div id="outputTarget" class="console-box" style="margin-top:12px;">Click something above...</div>
+    </div>
+
+    <!-- Practical 4: e.key -->
+    <h3>D. Detecting Keys Pressed (<span class="badge">e.key</span>)</h3>
+    <p>Great for detecting <span class="badge">Enter</span> to submit or <span class="badge">Escape</span> to close:</p>
+    <div class="demo-box">
+      <input type="text" id="keyField" placeholder="Press Enter or any key..." style="width: 250px;" />
+      <div id="outputKey" class="console-box">Key info will appear here...</div>
+    </div>
+
+    <!-- Practical 5: e.stopPropagation() -->
+    <h3>E. Stopping Bubbling (<span class="badge">e.stopPropagation()</span>)</h3>
+    <p>Prevents a child button's click from triggering its parent container's click:</p>
+    <div id="parentBox" class="demo-box" style="background:#fefcbf; border-color:#ecc94b; cursor:pointer;">
+      <span>Parent Box (Clicking here triggers an alert)</span><br/><br/>
+      <button id="childStopBtn" style="background:#d69e2e;">Click Me (Stops Bubbling)</button>
+      <div id="outputBubble" class="console-box" style="margin-top:10px;">Click the parent or button...</div>
+    </div>
+  </div>
+
+  <script>
+    // -------------------------------------------------------------
+    // Practical A: e.target.value
+    // -------------------------------------------------------------
+    const nameInput = document.getElementById("nameInput");
+    const outputInput = document.getElementById("outputInput");
+
+    nameInput.addEventListener("input", function(e) {
+      // e.target refers to the input field, .value is what's typed
+      outputInput.textContent = `e.target.value = "${e.target.value}"`;
+    });
+
+    // -------------------------------------------------------------
+    // Practical B: e.preventDefault()
+    // -------------------------------------------------------------
+    const userForm = document.getElementById("userForm");
+    const emailInput = document.getElementById("emailInput");
+    const outputForm = document.getElementById("outputForm");
+
+    userForm.addEventListener("submit", function(e) {
+      e.preventDefault(); // Prevents browser from reloading the page
+      outputForm.textContent = `SUCCESS: Page did NOT reload!\nSubmitted email: ${emailInput.value}`;
+    });
+
+    // -------------------------------------------------------------
+    // Practical C: e.target vs e.currentTarget
+    // -------------------------------------------------------------
+    const buttonContainer = document.getElementById("buttonContainer");
+    const outputTarget = document.getElementById("outputTarget");
+
+    buttonContainer.addEventListener("click", function(e) {
+      outputTarget.textContent = 
+        `e.target (actual element clicked): <${e.target.tagName.toLowerCase()} id="${e.target.id}">\n` +
+        `e.currentTarget (parent listener):  <${e.currentTarget.tagName.toLowerCase()} id="${e.currentTarget.id}">`;
+    });
+
+    // -------------------------------------------------------------
+    // Practical D: e.key
+    // -------------------------------------------------------------
+    const keyField = document.getElementById("keyField");
+    const outputKey = document.getElementById("outputKey");
+
+    keyField.addEventListener("keydown", function(e) {
+      outputKey.textContent = `Key Pressed: "${e.key}" (Code: "${e.code}")`;
+      if (e.key === "Enter") {
+        outputKey.textContent += " --> [ENTER KEY DETECTED!]";
+      }
+    });
+
+    // -------------------------------------------------------------
+    // Practical E: e.stopPropagation()
+    // -------------------------------------------------------------
+    const parentBox = document.getElementById("parentBox");
+    const childStopBtn = document.getElementById("childStopBtn");
+    const outputBubble = document.getElementById("outputBubble");
+
+    parentBox.addEventListener("click", function() {
+      outputBubble.textContent = "PARENT box was clicked!";
+    });
+
+    childStopBtn.addEventListener("click", function(e) {
+      e.stopPropagation(); // Stops the event from reaching parentBox
+      outputBubble.textContent = "BUTTON was clicked with e.stopPropagation()! Parent was NOT triggered.";
+    });
+  </script>
+
+</body>
+</html>
