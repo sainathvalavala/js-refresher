@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <table border="2px">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Gender</th>
+        </tr>
+      </thead>
+      <tbody id="tb"></tbody>
+    </table>
+    <script>
+      let arr = [
+        {
+          name: "arun",
+          age: "30",
+          gender: "male",
+        },
+        {
+          name: "shelby",
+          age: "33",
+          gender: "male",
+        },
+        {
+          name: "ravi",
+          age: "33",
+          gender: "female",
+        },
+      ];
+      let tbody = document.getElementById("tb");
+      for (let i = 0; i < arr.length; i++) {
+        let x = document.createElement("tr");
+        //name
+        let ndata = document.createElement("td");
+        ndata.innerText = arr[i].name;
+        x.appendChild(ndata);
+        //age
+        let Agedata = document.createElement("td");
+        Agedata.innerText = arr[i].age;
+        x.appendChild(Agedata);
+        //gender
+        let genderData = document.createElement("td");
+        genderData.innerText = arr[i].gender;
+        x.appendChild(genderData);
+
+        tbody.appendChild(x);
+      }
+    </script>
+  </body>
+</html>
