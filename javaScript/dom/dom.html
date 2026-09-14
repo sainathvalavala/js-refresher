@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DOM CRUD Operations</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      line-height: 1.6;
+      background-color: #f4f6f8;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .highlight {
+      color: #0b7285;
+      font-weight: bold;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      background: #e3fafc;
+      color: #0c8599;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    button {
+      padding: 8px 12px;
+      margin-right: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>DOM CRUD Operations Guide</h1>
+
+  <!-- Container for CRUD demonstrations -->
+  <div class="card">
+    <h2>1. Target Container (Parent Element)</h2>
+    <div id="container">
+      <p id="initial-para" class="text-item">Initial Paragraph inside #container</p>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================================
+       CRUD IN THE DOM:
+       - C -> Create: Creating elements, text nodes, and adding them to the DOM.
+       - R -> Read:   Selecting/finding elements, reading attributes and content.
+       - U -> Update: Modifying text, HTML, attributes, styles, and classes.
+       - D -> Delete: Removing elements, children, attributes, and clearing content.
+       ========================================================================= */
+
+    // -------------------------------------------------------------------------
+    // 1. CREATE (Adding new elements to the DOM)
+    // -------------------------------------------------------------------------
+
+    // a. createElement: Creates a new element node
+    const newDiv = document.createElement("div");
+
+    // b. createTextNode: Creates raw text node
+    const textNode = document.createTextNode(" I am a created text node.");
+
+    // c. Setting up content & attributes for new element
+    newDiv.id = "new-div";
+    newDiv.className = "card";
+    newDiv.textContent = "Created via document.createElement()";
+
+    // d. Attaching to parent (Insertion methods):
+    const container = document.getElementById("container");
+
+    // - appendChild(): Adds a single Node at the end
+    container.appendChild(newDiv);
+
+    // - append(): Appends multiple nodes or strings at the end
+    newDiv.append(textNode, " (Appended string!)");
+
+    // - prepend(): Adds node/string at the very beginning
+    const prependedItem = document.createElement("span");
+    prependedItem.className = "badge";
+    prependedItem.textContent = "[NEW] ";
+    container.prepend(prependedItem);
+
+    // - insertBefore(newNode, referenceNode): Inserts before a specific child
+    const insertedBefore = document.createElement("p");
+    insertedBefore.textContent = "Inserted before initial-para";
+    container.insertBefore(insertedBefore, document.getElementById("initial-para"));
+
+    // - insertAdjacentHTML() / insertAdjacentElement()
+    // Positions: 'beforebegin', 'afterbegin', 'beforeend', 'afterend'
+    container.insertAdjacentHTML("beforeend", "<p style='color: green;'>Inserted with insertAdjacentHTML('beforeend')</p>");
+
+
+    // -------------------------------------------------------------------------
+    // 2. READ (Selecting and accessing elements & properties)
+    // -------------------------------------------------------------------------
+
+    // a. Selecting single element
+    const containerById = document.getElementById("container");          // by ID
+    const firstTextItem = document.querySelector(".text-item");          // CSS selector (first match)
+
+    // b. Selecting multiple elements
+    const allItems = document.querySelectorAll(".text-item");            // NodeList (static)
+    const allParas = document.getElementsByTagName("p");                 // HTMLCollection (live)
+    const allByClass = document.getElementsByClassName("card");          // HTMLCollection (live)
+
+    // c. Reading text and HTML content
+    console.log("innerText:", firstTextItem.innerText);                  // Visible rendered text
+    console.log("textContent:", firstTextItem.textContent);              // All raw text (including hidden)
+    console.log("innerHTML:", container.innerHTML);                      // Inner HTML string
+
+    // d. Reading attributes
+    console.log("getAttribute('id'):", firstTextItem.getAttribute("id"));
+    console.log("hasAttribute('class'):", firstTextItem.hasAttribute("class"));
+
+    // e. Reading styles (computed styles)
+    const computedStyles = window.getComputedStyle(firstTextItem);
+    console.log("Computed color:", computedStyles.color);
+
+
+    // -------------------------------------------------------------------------
+    // 3. UPDATE (Modifying content, styles, attributes, and classes)
+    // -------------------------------------------------------------------------
+
+    const paraToUpdate = document.getElementById("initial-para");
+
+    // a. Update content
+    paraToUpdate.textContent = "Updated Paragraph Text (via textContent)";
+    // paraToUpdate.innerHTML = "Updated with <strong>HTML</strong>";
+
+    // b. Update attributes
+    paraToUpdate.setAttribute("title", "This is an updated tooltip");
+    paraToUpdate.id = "updated-para-id"; // direct property update
+
+    // c. Update styles
+    paraToUpdate.style.color = "#d9480f";
+    paraToUpdate.style.fontWeight = "bold";
+    paraToUpdate.style.fontSize = "18px";
+
+    // d. Update classes (classList API)
+    paraToUpdate.classList.add("highlight");
+    paraToUpdate.classList.remove("text-item");
+    paraToUpdate.classList.toggle("active");
+    paraToUpdate.classList.replace("highlight", "badge");
+
+    // e. Replace element
+    const replacementElement = document.createElement("div");
+    replacementElement.textContent = "Replaced previous node completely (replaceWith)";
+    insertedBefore.replaceWith(replacementElement);
+    // Alternatively: container.replaceChild(replacementElement, oldChild);
+
+
+    // -------------------------------------------------------------------------
+    // 4. DELETE (Removing elements, children, attributes)
+    // -------------------------------------------------------------------------
+
+    // a. element.remove(): Removes the element itself directly
+    // replacementElement.remove();
+
+    // b. parent.removeChild(child): Removes a specific child node
+    // container.removeChild(newDiv);
+
+    // c. Removing attributes
+    paraToUpdate.removeAttribute("title");
+
+    // d. Clearing all children / inner content
+    // container.innerHTML = ""; // Removes all children inside container
+    // while (container.firstChild) { container.removeChild(container.firstChild); }
+
+    console.log("DOM CRUD demonstrations loaded successfully!");
+  </script>
+</body>
+</html>
