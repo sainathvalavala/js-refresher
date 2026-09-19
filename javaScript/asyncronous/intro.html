@@ -600,6 +600,91 @@
       .card { padding: 24px 18px; }
       .nav-bar-sticky { top: 8px; }
     }
+
+    /* Loupe Visualizer Embed Section */
+    .loupe-container {
+      background: var(--code-bg);
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin: 28px 0;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+    }
+
+    .loupe-container.fullscreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999;
+      border-radius: 0;
+      margin: 0;
+    }
+
+    .loupe-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 14px 20px;
+      background: var(--bg-surface-elevated);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .loupe-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pulse-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 10px var(--accent-green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.7; }
+    }
+
+    .loupe-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-sm {
+      padding: 6px 14px;
+      font-size: 0.8rem;
+    }
+
+    .loupe-frame-wrapper {
+      position: relative;
+      width: 100%;
+      height: 720px;
+      background: #ffffff;
+    }
+
+    .loupe-container.fullscreen .loupe-frame-wrapper {
+      height: calc(100vh - 58px);
+    }
+
+    .loupe-frame-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -623,6 +708,7 @@
       <div class="nav-links">
         <a href="#why-async">1. Why Asynchronous?</a>
         <a href="#event-loop">2. The Event Loop</a>
+        <a href="#loupe-section">⚡ Event Loupe</a>
         <a href="#evolution">3. Evolution of Async</a>
         <a href="#interactive-lab">4. Interactive Lab</a>
         <a href="#role-in-react">5. Importance in React</a>
@@ -751,6 +837,76 @@
 <span class="code-comment">// 4: Synchronous End</span>
 <span class="code-comment">// 3: Microtask (Promise)      &lt;-- Promises jump ahead of setTimeout(0)!</span>
 <span class="code-comment">// 2: Macrotask (setTimeout)</span></code></pre>
+      </div>
+    </section>
+
+    <!-- SECTION 2.5: Interactive Loupe Visualizer -->
+    <section id="loupe-section">
+      <div class="card" style="border-color: rgba(56, 189, 248, 0.35);">
+        <span class="section-tag" style="color: var(--accent-primary);">Live Execution Sandbox</span>
+        <h2>
+          <span>🔍</span> Interactive Event Loop in Action: Loupe
+        </h2>
+        <p>
+          Philip Roberts created <strong>Loupe</strong> to visualize how JavaScript's single-threaded Call Stack, 
+          Web APIs, Callback Queue, and Event Loop coordinate tasks in real-time.
+        </p>
+
+        <div class="loupe-container" id="loupe-card">
+          <div class="loupe-toolbar">
+            <div class="loupe-title">
+              <span class="pulse-indicator"></span> Loupe Live Visualizer Engine
+            </div>
+            <div class="loupe-actions">
+              <a href="https://latentflip.com/loupe/?code=JC5vbignYnV0dG9uJywgJ2NsaWNrJywgZnVuY3Rpb24gb25DbGljaygpIHsKICAgIHNldFRpbWVvdXQoZnVuY3Rpb24gdGltZXIoKSB7CiAgICAgICAgY29uc29sZS5sb2coJ1lvdSBjbGlja2VkIHRoZSBidXR0b24hJyk7ICAgIAogICAgfSwgMjAwMCk7Cn0pOwoKY29uc29sZS5sb2coIkhpISIpOwoKc2V0VGltZW91dChmdW5jdGlvbiB0aW1lb3V0KCkgewogICAgY29uc29sZS5sb2coIkNsaWNrIHRoZSBidXR0b24hIik7Cn0sIDUwMDApOwoKY29uc29sZS5sb2coIldlbGNvbWUgdG8gbG91cGUuIik7!!!PGJ1dHRvbj5DbGljayBtZSE8L2J1dHRvbj4%3D" 
+                 target="_blank" 
+                 rel="noopener noreferrer" 
+                 class="btn btn-outline btn-sm">
+                ↗ Open in New Window
+              </a>
+              <button id="toggle-loupe-fullscreen" class="btn btn-primary btn-sm">
+                ⛶ Maximize
+              </button>
+            </div>
+          </div>
+          <div class="loupe-frame-wrapper">
+            <iframe 
+              src="https://latentflip.com/loupe/?code=JC5vbignYnV0dG9uJywgJ2NsaWNrJywgZnVuY3Rpb24gb25DbGljaygpIHsKICAgIHNldFRpbWVvdXQoZnVuY3Rpb24gdGltZXIoKSB7CiAgICAgICAgY29uc29sZS5sb2coJ1lvdSBjbGlja2VkIHRoZSBidXR0b24hJyk7ICAgIAogICAgfSwgMjAwMCk7Cn0pOwoKY29uc29sZS5sb2coIkhpISIpOwoKc2V0VGltZW91dChmdW5jdGlvbiB0aW1lb3V0KCkgewogICAgY29uc29sZS5sb2coIkNsaWNrIHRoZSBidXR0b24hIik7Cn0sIDUwMDApOwoKY29uc29sZS5sb2coIldlbGNvbWUgdG8gbG91cGUuIik7!!!PGJ1dHRvbj5DbGljayBtZSE8L2J1dHRvbj4%3D" 
+              title="Loupe Event Loop Visualizer"
+              loading="lazy"
+              allowfullscreen>
+            </iframe>
+          </div>
+        </div>
+
+        <div class="callout callout-info">
+          <div class="callout-title">💡 How to Experience this Loupe Demonstration</div>
+          <div style="font-size: 0.94rem; color: #cbd5e1; line-height: 1.6;">
+            <p style="margin-bottom: 8px;">The visualization runs this exact asynchronous scenario:</p>
+            <pre style="margin: 8px 0 12px 0;"><code><span class="code-fn">$</span>.<span class="code-fn">on</span>(<span class="code-str">'button'</span>, <span class="code-str">'click'</span>, <span class="code-keyword">function</span> <span class="code-fn">onClick</span>() {
+    <span class="code-fn">setTimeout</span>(<span class="code-keyword">function</span> <span class="code-fn">timer</span>() {
+        <span class="code-fn">console</span>.<span class="code-fn">log</span>(<span class="code-str">'You clicked the button!'</span>);    
+    }, <span class="code-num">2000</span>);
+});
+
+<span class="code-fn">console</span>.<span class="code-fn">log</span>(<span class="code-str">"Hi!"</span>);
+
+<span class="code-fn">setTimeout</span>(<span class="code-keyword">function</span> <span class="code-fn">timeout</span>() {
+    <span class="code-fn">console</span>.<span class="code-fn">log</span>(<span class="code-str">"Click the button!"</span>);
+}, <span class="code-num">5000</span>);
+
+<span class="code-fn">console</span>.<span class="code-fn">log</span>(<span class="code-str">"Welcome to loupe."</span>);</code></pre>
+            <ol style="margin-left: 20px; margin-top: 8px;">
+              <li><strong>Click "Save & Run"</strong> inside Loupe to start stepping through the script.</li>
+              <li><code>$.on(...)</code> immediately delegates the click listener to the browser's <strong>Web APIs</strong>.</li>
+              <li><code>console.log("Hi!")</code> pushes to the <strong>Call Stack</strong>, logs immediately, and pops off.</li>
+              <li><code>setTimeout(..., 5000)</code> is handed off to <strong>Web APIs</strong> to count down in the background.</li>
+              <li><code>console.log("Welcome to loupe.")</code> runs next and clears the Call Stack.</li>
+              <li><strong>Click the "Click me!" button</strong> in the rendered preview on the bottom right! Notice how <code>onClick()</code> gets queued into the <strong>Callback Queue</strong>.</li>
+              <li>The <strong>Event Loop</strong> waits until the Call Stack is empty before moving callbacks onto the stack for execution.</li>
+            </ol>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1182,6 +1338,24 @@
         localStorage.setItem(STORAGE_KEY, JSON.stringify(savedProgress));
       }
     });
+
+    // Loupe Fullscreen Toggle
+    const toggleLoupeBtn = document.getElementById("toggle-loupe-fullscreen");
+    const loupeCard = document.getElementById("loupe-card");
+    if (toggleLoupeBtn && loupeCard) {
+      toggleLoupeBtn.addEventListener("click", () => {
+        const isFull = loupeCard.classList.toggle("fullscreen");
+        toggleLoupeBtn.textContent = isFull ? "✕ Minimize" : "⛶ Maximize";
+        document.body.style.overflow = isFull ? "hidden" : "";
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && loupeCard.classList.contains("fullscreen")) {
+          loupeCard.classList.remove("fullscreen");
+          toggleLoupeBtn.textContent = "⛶ Maximize";
+          document.body.style.overflow = "";
+        }
+      });
+    }
   </script>
 </body>
 </html>
