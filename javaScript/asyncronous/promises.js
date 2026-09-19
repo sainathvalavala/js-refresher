@@ -63,83 +63,91 @@
  */
 
 console.log("==================================================================");
-console.log("=== 🛒 PART 1: E-COMMERCE WORKFLOW (RESOLVING CALLBACK HELL)   ===");
+console.log("=== 🚦 PART 1: SIMPLE TASKS (RESOLVING CALLBACK HELL)          ===");
 console.log("==================================================================");
 
-// 1. Refactoring operations to return Promises instead of taking callbacks
-function placeOrder(item) {
+// 1. Refactoring tasks to RETURN a Promise with resolve and reject error handling
+function task1() {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      if (!item) {
-        return reject(new Error("No item selected!"));
+      const success = true;
+      if (success) {
+        console.log("Task 1 complete");
+        resolve("Task 1 Data");
+      } else {
+        reject(new Error("Task 1 failed!"));
       }
-      console.log(`Step 1: Order placed for [${item}].`);
-      resolve({ id: 101, item: item, price: 250 });
-    }, 400);
+    }, 2000);
   });
 }
 
-function processPayment(order) {
+function task2() {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      if (order.price <= 0) {
-        return reject(new Error("Invalid payment amount!"));
+      const success = true;
+      if (success) {
+        console.log("Task 2 complete");
+        resolve("Task 2 Data");
+      } else {
+        reject(new Error("Task 2 failed!"));
       }
-      console.log(`Step 2: Payment of ₹${order.price} processed successfully.`);
-      resolve({ order, payment: { transactionId: "TXN_998877", status: "SUCCESS" } });
-    }, 400);
+    }, 1000);
   });
 }
 
-function prepareFood(orderData) {
+function task3() {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      if (orderData.payment.status !== "SUCCESS") {
-        return reject(new Error("Payment verification failed!"));
+      const success = true;
+      if (success) {
+        console.log("Task 3 complete");
+        resolve("Task 3 Data");
+      } else {
+        reject(new Error("Task 3 failed!"));
       }
-      console.log(`Step 3: Chef prepared the ${orderData.order.item}. Hot & ready!`);
-      resolve({
-        ...orderData,
-        packageInfo: { packageId: "PKG_443", food: orderData.order.item }
-      });
-    }, 400);
+    }, 3000);
   });
 }
 
-function assignDelivery(finalOrderData) {
-  return new Promise((resolve) => {
+function task4() {
+  return new Promise((resolve, reject) => {
     setTimeout(() => {
-      console.log(`Step 4: Delivery partner picked up package ${finalOrderData.packageInfo.packageId}. Out for delivery!`);
-      resolve({ eta: "20 minutes", agent: "Ramesh" });
-    }, 400);
+      const success = true;
+      if (success) {
+        console.log("Task 4 complete");
+        resolve("Task 4 Data");
+      } else {
+        reject(new Error("Task 4 failed!"));
+      }
+    }, 1500);
   });
 }
 
 // ----------------------------------------------------------------------------
 // INSTANCE METHODS IN ACTION: .then(), .catch(), .finally()
+// Notice how every step returns the next task, staying flat and vertical!
 // ----------------------------------------------------------------------------
-placeOrder("Paneer Butter Masala")
-  .then((order) => {
-    return processPayment(order);
+task1()
+  .then((value) => {
+    return task2();
   })
-  .then((orderData) => {
-    return prepareFood(orderData);
+  .then((value) => {
+    return task3();
   })
-  .then((finalOrderData) => {
-    return assignDelivery(finalOrderData);
+  .then((value) => {
+    return task4();
   })
-  .then((delivery) => {
-    console.log(`🎉 Pipeline Success! Delivered in ${delivery.eta} by ${delivery.agent}.`);
+  .then((value) => {
+    console.log("🎉 All tasks completed successfully!");
   })
   .catch((err) => {
-    // Single centralized error handler catching any failure upstream
+    // 🛡️ One single handler catches failures from any task upstream
     console.error("❌ Pipeline Failed:", err.message);
   })
   .finally(() => {
-    console.log("🧹 .finally() executed: Database session closed & loader hidden.\n");
+    console.log("🧹 .finally() executed: All tasks settled.\n");
     runCombinatorsDemo();
   });
-
 
 // ============================================================================
 // PART 2: STATIC METHODS & COMBINATORS DEMO

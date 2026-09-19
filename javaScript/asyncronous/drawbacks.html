@@ -428,9 +428,9 @@
     <section>
       <div class="card">
         <span class="section-tag" style="color: var(--accent-promise);">Side-By-Side Implementation</span>
-        <h2>1. The Same E-Commerce Workflow in All Three Paradigms</h2>
+        <h2>1. The Same 4 Tasks in All Three Paradigms</h2>
         <p>
-          Compare the exact same 4-step sequence: <code>placeOrder</code> &rarr; <code>processPayment</code> &rarr; <code>prepareFood</code> &rarr; <code>assignDelivery</code>.
+          Compare the exact same sequence: <code>task1</code> &rarr; <code>task2</code> &rarr; <code>task3</code> &rarr; <code>task4</code>.
         </p>
 
         <div class="tab-nav">
@@ -441,64 +441,74 @@
 
         <!-- TAB 1: CALLBACK HELL -->
         <div class="tab-content active" id="tab-cb">
-          <pre><code><span class="code-comment">// ❌ CALLBACK HELL: Rightward pyramid drift, fragmented error handling</span>
-<span class="code-fn">placeOrder</span>(<span class="code-str">"Paneer Butter Masala"</span>, <span class="code-kw">function</span> (err1, order) {
-  <span class="code-kw">if</span> (err1) <span class="code-kw">return</span> <span class="code-fn">handleError</span>(err1);
-
-  <span class="code-fn">processPayment</span>(order, <span class="code-kw">function</span> (err2, payment) {
-    <span class="code-kw">if</span> (err2) <span class="code-kw">return</span> <span class="code-fn">handleError</span>(err2);
-
-    <span class="code-fn">prepareFood</span>(order, payment, <span class="code-kw">function</span> (err3, pkg) {
-      <span class="code-kw">if</span> (err3) <span class="code-kw">return</span> <span class="code-fn">handleError</span>(err3);
-
-      <span class="code-fn">assignDelivery</span>(pkg, <span class="code-kw">function</span> (err4, delivery) {
-        <span class="code-kw">if</span> (err4) <span class="code-kw">return</span> <span class="code-fn">handleError</span>(err4);
-
-        <span class="code-fn">console</span>.<span class="code-fn">log</span>(<span class="code-str">`Delivered in ${delivery.eta}!`</span>);
-      });
+          <pre><code><span class="code-comment">// ❌ CALLBACK HELL: Pyramid of doom + repetitive `if (err)` checks at EVERY level</span>
+<span class="code-fn">task1</span>((err1, data1) => {
+  <span class="code-kw">if</span> (err1) {
+    <span class="code-fn">console</span>.<span class="code-fn">error</span>(<span class="code-str">"Task 1 failed:"</span>, err1.message);
+  } <span class="code-kw">else</span> {
+    <span class="code-fn">task2</span>((err2, data2) => {
+      <span class="code-kw">if</span> (err2) {
+        <span class="code-fn">console</span>.<span class="code-fn">error</span>(<span class="code-str">"Task 2 failed:"</span>, err2.message);
+      } <span class="code-kw">else</span> {
+        <span class="code-fn">task3</span>((err3, data3) => {
+          <span class="code-kw">if</span> (err3) {
+            <span class="code-fn">console</span>.<span class="code-fn">error</span>(<span class="code-str">"Task 3 failed:"</span>, err3.message);
+          } <span class="code-kw">else</span> {
+            <span class="code-fn">task4</span>((err4, data4) => {
+              <span class="code-kw">if</span> (err4) {
+                <span class="code-fn">console</span>.<span class="code-fn">error</span>(<span class="code-str">"Task 4 failed:"</span>, err4.message);
+              } <span class="code-kw">else</span> {
+                <span class="code-fn">console</span>.<span class="code-fn">log</span>(<span class="code-str">"🎉 All tasks completed!"</span>);
+              }
+            });
+          }
+        });
+      }
     });
-  });
+  }
 });</code></pre>
         </div>
 
         <!-- TAB 2: PROMISES -->
         <div class="tab-content" id="tab-prom">
-          <pre><code><span class="code-comment">// ⚠️ PROMISES: Flattened pyramid and centralized catch, but scope gymnastics</span>
-<span class="code-fn">placeOrder</span>(<span class="code-str">"Paneer Butter Masala"</span>)
-  .<span class="code-fn">then</span>((order) => {
-    <span class="code-kw">return</span> <span class="code-fn">processPayment</span>(order); <span class="code-comment">// Must pass both order + payment down</span>
+          <pre><code><span class="code-comment">// ⚠️ PROMISES: Flattened vertical chain, but still requires callback syntax</span>
+<span class="code-fn">task1</span>()
+  .<span class="code-fn">then</span>((val1) => {
+    <span class="code-kw">return</span> <span class="code-fn">task2</span>();
   })
-  .<span class="code-fn">then</span>((orderData) => {
-    <span class="code-kw">return</span> <span class="code-fn">prepareFood</span>(orderData);
+  .<span class="code-fn">then</span>((val2) => {
+    <span class="code-kw">return</span> <span class="code-fn">task3</span>();
   })
-  .<span class="code-fn">then</span>((finalData) => {
-    <span class="code-kw">return</span> <span class="code-fn">assignDelivery</span>(finalData);
+  .<span class="code-fn">then</span>((val3) => {
+    <span class="code-kw">return</span> <span class="code-fn">task4</span>();
   })
-  .<span class="code-fn">then</span>((delivery) => {
-    <span class="code-fn">console</span>.<span class="code-fn">log</span>(<span class="code-str">`Delivered in ${delivery.eta}!`</span>);
+  .<span class="code-fn">then</span>((val4) => {
+    <span class="code-fn">console</span>.<span class="code-fn">log</span>(<span class="code-str">"🎉 All tasks completed!"</span>);
   })
   .<span class="code-fn">catch</span>((err) => {
-    <span class="code-fn">console</span>.<span class="code-fn">error</span>(<span class="code-str">"Order pipeline failed:"</span>, err.message);
+    <span class="code-fn">console</span>.<span class="code-fn">error</span>(<span class="code-str">"Pipeline failed:"</span>, err.message);
   });</code></pre>
         </div>
 
         <!-- TAB 3: ASYNC / AWAIT -->
         <div class="tab-content" id="tab-async">
           <pre><code><span class="code-comment">// ✅ ASYNC / AWAIT: Perfectly linear, natural scoping, native try/catch</span>
-<span class="code-kw">async function</span> <span class="code-fn">handleOrder</span>(item) {
+<span class="code-kw">async function</span> <span class="code-fn">executeTasks</span>() {
   <span class="code-kw">try</span> {
-    <span class="code-kw">const</span> order    = <span class="code-kw">await</span> <span class="code-fn">placeOrder</span>(item);
-    <span class="code-kw">const</span> payment  = <span class="code-kw">await</span> <span class="code-fn">processPayment</span>(order);
-    <span class="code-kw">const</span> pkg      = <span class="code-kw">await</span> <span class="code-fn">prepareFood</span>(order.item);
-    <span class="code-kw">const</span> delivery = <span class="code-kw">await</span> <span class="code-fn">assignDelivery</span>(pkg.packageId, order.isExpress);
+    <span class="code-kw">const</span> val1 = <span class="code-kw">await</span> <span class="code-fn">task1</span>();
+    <span class="code-kw">const</span> val2 = <span class="code-kw">await</span> <span class="code-fn">task2</span>();
+    <span class="code-kw">const</span> val3 = <span class="code-kw">await</span> <span class="code-fn">task3</span>();
+    <span class="code-kw">const</span> val4 = <span class="code-kw">await</span> <span class="code-fn">task4</span>();
 
-    <span class="code-fn">console</span>.<span class="code-fn">log</span>(<span class="code-str">`Delivered in ${delivery.eta}!`</span>);
+    <span class="code-fn">console</span>.<span class="code-fn">log</span>(<span class="code-str">"🎉 All tasks completed!"</span>);
   } <span class="code-kw">catch</span> (err) {
-    <span class="code-fn">console</span>.<span class="code-fn">error</span>(<span class="code-str">"Order pipeline failed:"</span>, err.message);
+    <span class="code-fn">console</span>.<span class="code-fn">error</span>(<span class="code-str">"Pipeline failed:"</span>, err.message);
   } <span class="code-kw">finally</span> {
-    <span class="code-fn">console</span>.<span class="code-fn">log</span>(<span class="code-str">"Order session closed."</span>);
+    <span class="code-fn">console</span>.<span class="code-fn">log</span>(<span class="code-str">"Workflow finished."</span>);
   }
-}</code></pre>
+}
+
+<span class="code-fn">executeTasks</span>();</code></pre>
         </div>
       </div>
     </section>

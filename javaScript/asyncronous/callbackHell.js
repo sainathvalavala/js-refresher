@@ -28,75 +28,82 @@
  * ============================================================================
  */
 
-console.log("=== 🛒 E-COMMERCE FOOD ORDERING: CALLBACK HELL DEMO ===");
+console.log("=== 🚦 SIMPLE TASKS: CALLBACK HELL DEMO (WITH ERROR HANDLING) ===");
 
-// 1. Simulating asynchronous steps using traditional callbacks (Error-First pattern)
-function placeOrder(item, callback) {
+// 1. Defining 4 sequential tasks using the standard Error-First callback pattern: (err, data)
+function task1(callback) {
   setTimeout(() => {
-    if (!item) {
-      return callback(new Error("No item selected!"), null);
+    const success = true;
+    if (success) {
+      console.log("Task 1 complete");
+      callback(null, "Task 1 Data");
+    } else {
+      callback(new Error("Task 1 failed!"), null);
     }
-    console.log(`Step 1: Order placed for [${item}].`);
-    const order = { id: 101, item: item, price: 250 };
-    callback(null, order);
+  }, 2000);
+}
+
+function task2(callback) {
+  setTimeout(() => {
+    const success = true;
+    if (success) {
+      console.log("Task 2 complete");
+      callback(null, "Task 2 Data");
+    } else {
+      callback(new Error("Task 2 failed!"), null);
+    }
   }, 1000);
 }
 
-function processPayment(order, callback) {
+function task3(callback) {
   setTimeout(() => {
-    if (order.price <= 0) {
-      return callback(new Error("Invalid payment amount!"), null);
+    const success = true;
+    if (success) {
+      console.log("Task 3 complete");
+      callback(null, "Task 3 Data");
+    } else {
+      callback(new Error("Task 3 failed!"), null);
     }
-    console.log(`Step 2: Payment of ₹${order.price} processed successfully.`);
-    const payment = { transactionId: "TXN_998877", status: "SUCCESS" };
-    callback(null, payment);
-  }, 1000);
+  }, 3000);
 }
 
-function prepareFood(order, payment, callback) {
+function task4(callback) {
   setTimeout(() => {
-    if (payment.status !== "SUCCESS") {
-      return callback(new Error("Payment verification failed!"), null);
+    const success = true;
+    if (success) {
+      console.log("Task 4 complete");
+      callback(null, "Task 4 Data");
+    } else {
+      callback(new Error("Task 4 failed!"), null);
     }
-    console.log(`Step 3: Chef prepared the ${order.item}. Hot & ready!`);
-    const packageInfo = { packageId: "PKG_443", food: order.item };
-    callback(null, packageInfo);
-  }, 1000);
-}
-
-function assignDelivery(packageInfo, callback) {
-  setTimeout(() => {
-    console.log(`Step 4: Delivery partner picked up package ${packageInfo.packageId}. Out for delivery!`);
-    const delivery = { eta: "20 minutes", agent: "Ramesh" };
-    callback(null, delivery);
-  }, 1000);
+  }, 1500);
 }
 
 // ----------------------------------------------------------------------------
-// 💥 THE PYRAMID OF DOOM IN ACTION:
-// Notice how every step requires an error check and shifts rightward:
+// 💥 THE PYRAMID OF DOOM (CALLBACK HELL) WITH ERROR HANDLING:
+// Notice the nightmare: you must write `if (err)` at EVERY single nesting level!
 // ----------------------------------------------------------------------------
-placeOrder("Paneer Butter Masala", function (err1, order) {
+task1((err1, data1) => {
   if (err1) {
-    console.error("❌ Error placing order:", err1.message);
+    console.error("❌ Error in Task 1:", err1.message);
   } else {
     // Nested Level 1
-    processPayment(order, function (err2, payment) {
+    task2((err2, data2) => {
       if (err2) {
-        console.error("❌ Error processing payment:", err2.message);
+        console.error("❌ Error in Task 2:", err2.message);
       } else {
         // Nested Level 2
-        prepareFood(order, payment, function (err3, packageInfo) {
+        task3((err3, data3) => {
           if (err3) {
-            console.error("❌ Error preparing food:", err3.message);
+            console.error("❌ Error in Task 3:", err3.message);
           } else {
             // Nested Level 3
-            assignDelivery(packageInfo, function (err4, delivery) {
+            task4((err4, data4) => {
               if (err4) {
-                console.error("❌ Error assigning delivery:", err4.message);
+                console.error("❌ Error in Task 4:", err4.message);
               } else {
                 // Nested Level 4
-                console.log(`🎉 Final Success! Delivery in ${delivery.eta} by ${delivery.agent}.`);
+                console.log("🎉 All tasks completed successfully!");
               }
             });
           }

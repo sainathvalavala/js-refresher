@@ -30,87 +30,86 @@
  * ============================================================================
  */
 
-console.log("=== 🛒 E-COMMERCE FOOD ORDERING: ASYNC / AWAIT DEMO ===");
+console.log("=== 🚦 SIMPLE TASKS: ASYNC / AWAIT DEMO ===");
 
-// Reusable Promise-based services
-function placeOrder(item) {
+// 1. Defining the 4 tasks returning Promises (with resolve & reject error handling)
+function task1() {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      if (!item) return reject(new Error("No item selected!"));
-      console.log(`Step 1: Order placed for [${item}].`);
-      resolve({ id: 101, item: item, price: 250, isExpress: true });
-    }, 1000);
+      const success = true;
+      if (success) {
+        console.log("Task 1 complete");
+        resolve("Task 1 Data");
+      } else {
+        reject(new Error("Task 1 failed!"));
+      }
+    }, 2000);
   });
 }
 
-function processPayment(order) {
+function task2() {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      if (order.price <= 0) return reject(new Error("Invalid payment amount!"));
-      console.log(`Step 2: Payment of ₹${order.price} processed successfully.`);
-      resolve({ transactionId: "TXN_998877", status: "SUCCESS" });
+      const success = true;
+      if (success) {
+        console.log("Task 2 complete");
+        resolve("Task 2 Data");
+      } else {
+        reject(new Error("Task 2 failed!"));
+      }
     }, 1000);
   });
 }
 
-function prepareFood(item) {
-  return new Promise((resolve) => {
+function task3() {
+  return new Promise((resolve, reject) => {
     setTimeout(() => {
-      console.log(`Step 3: Chef prepared the ${item}. Hot & ready!`);
-      resolve({ packageId: "PKG_443", food: item });
-    }, 1000);
+      const success = true;
+      if (success) {
+        console.log("Task 3 complete");
+        resolve("Task 3 Data");
+      } else {
+        reject(new Error("Task 3 failed!"));
+      }
+    }, 3000);
   });
 }
 
-function assignDelivery(packageId, isExpress) {
-  return new Promise((resolve) => {
+function task4() {
+  return new Promise((resolve, reject) => {
     setTimeout(() => {
-      const eta = isExpress ? "10 minutes (Express Priority)" : "35 minutes (Standard)";
-      console.log(`Step 4: Package ${packageId} picked up. ETA: ${eta}`);
-      resolve({ eta, agent: "Ramesh" });
-    }, 1000);
+      const success = true;
+      if (success) {
+        console.log("Task 4 complete");
+        resolve("Task 4 Data");
+      } else {
+        reject(new Error("Task 4 failed!"));
+      }
+    }, 1500);
   });
 }
 
 // ----------------------------------------------------------------------------
 // 🌟 THE ASYNC / AWAIT IMPLEMENTATION:
-// Beautiful, linear, effortlessly readable, and fully scoped!
+// Linear, top-to-bottom, native try/catch, zero nesting!
 // ----------------------------------------------------------------------------
-async function executeFoodOrder(item) {
+async function executeTasks() {
   try {
-    console.log(`\n⏳ Starting order workflow for: "${item}"...`);
+    const res1 = await task1();
+    const res2 = await task2();
+    const res3 = await task3();
+    const res4 = await task4();
 
-    // Step 1: Place Order
-    const order = await placeOrder(item);
-
-    // Step 2: Process Payment
-    const payment = await processPayment(order);
-
-    // Dynamic Conditional Logic (Trivial with async/await!)
-    if (payment.status !== "SUCCESS") {
-      throw new Error("Payment was rejected by bank.");
-    }
-
-    // Step 3: Prepare Food (Notice we access `order.item` directly without scope gymnastics!)
-    const packageInfo = await prepareFood(order.item);
-
-    // Step 4: Dispatch Delivery (Notice we access both `packageInfo` AND `order.isExpress`!)
-    const delivery = await assignDelivery(packageInfo.packageId, order.isExpress);
-
-    console.log(`🎉 SUCCESS! Order #${order.id} will arrive in ${delivery.eta} via ${delivery.agent}.\n`);
-    return { order, delivery };
-
+    console.log("🎉 All tasks completed successfully!");
   } catch (error) {
-    // 🛡️ Handles ANY error from step 1, 2, 3, or 4 seamlessly:
-    console.error("❌ Order Process Failed:", error.message);
+    console.error("❌ An error occurred:", error.message);
   } finally {
-    // 🧹 Runs cleanup regardless of outcome:
-    console.log("🧹 Lifecycle complete. Session closed safely.");
+    console.log("🧹 Cleanup complete. Workflow finished.\n");
   }
 }
 
 // Execute the async workflow
-executeFoodOrder("Paneer Butter Masala");
+executeTasks();
 
 // ----------------------------------------------------------------------------
 // PRO-TIP: CONCURRENT / PARALLEL ASYNC/AWAIT
