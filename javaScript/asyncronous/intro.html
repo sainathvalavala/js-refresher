@@ -685,6 +685,76 @@
       border: none;
       display: block;
     }
+
+    /* Learning & Code Reference Hub */
+    .reference-hub {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin: 28px auto 0;
+      max-width: 1000px;
+    }
+
+    .ref-card {
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      text-decoration: none;
+      transition: all 0.22s ease;
+      text-align: left;
+    }
+
+    .ref-card:hover {
+      border-color: var(--accent-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.18);
+    }
+
+    .ref-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 5px;
+    }
+
+    .ref-name {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+
+    .ref-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .inline-code-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border);
+      color: #f1f5f9;
+      text-decoration: none;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.82rem;
+      margin-bottom: 12px;
+      transition: all 0.2s ease;
+    }
+    .inline-code-link:hover {
+      border-color: var(--accent-primary);
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent-primary);
+    }
   </style>
 </head>
 <body>
@@ -701,6 +771,33 @@
         A deep, foundational exploration into single-threaded execution, the Browser Event Loop,
         Promises, and why mastering asynchronous patterns is the backbone of modern React applications.
       </p>
+
+      <!-- Learning & Code Reference Hub -->
+      <div class="reference-hub">
+        <a href="callbackHell.js" class="ref-card" style="border-top: 3px solid var(--accent-rose);">
+          <span class="ref-badge" style="color: var(--accent-rose);">Phase 1 &bull; JavaScript</span>
+          <span class="ref-name">📜 callbackHell.js</span>
+          <span class="ref-desc">Pyramid of Doom, Inversion of Control & nested error handling</span>
+        </a>
+
+        <a href="promises.js" class="ref-card" style="border-top: 3px solid var(--accent-primary);">
+          <span class="ref-badge" style="color: var(--accent-primary);">Phase 2 &bull; JavaScript</span>
+          <span class="ref-name">📜 promises.js</span>
+          <span class="ref-desc">Chaining, all, allSettled, race, any, & withResolvers()</span>
+        </a>
+
+        <a href="asyncAwait.js" class="ref-card" style="border-top: 3px solid var(--accent-green);">
+          <span class="ref-badge" style="color: var(--accent-green);">Phase 3 &bull; JavaScript</span>
+          <span class="ref-name">📜 asyncAwait.js</span>
+          <span class="ref-desc">The modern gold standard, unified try/catch & concurrent flows</span>
+        </a>
+
+        <a href="drawbacks.html" class="ref-card" style="border-top: 3px solid #a855f7;">
+          <span class="ref-badge" style="color: #c084fc;">Interactive &bull; HTML</span>
+          <span class="ref-name">⚖️ drawbacks.html</span>
+          <span class="ref-desc">Side-by-side tabs, architectural comparison matrix & live runner</span>
+        </a>
+      </div>
     </header>
 
     <!-- Sticky Progress & Nav -->
@@ -710,6 +807,7 @@
         <a href="#event-loop">2. The Event Loop</a>
         <a href="#loupe-section">⚡ Event Loupe</a>
         <a href="#evolution">3. Evolution of Async</a>
+        <a href="drawbacks.html" style="color: var(--accent-green);">⚖️ Drawbacks & Evolution</a>
         <a href="#interactive-lab">4. Interactive Lab</a>
         <a href="#role-in-react">5. Importance in React</a>
         <a href="#react-pitfalls">6. React Pitfalls & Fixes</a>
@@ -918,9 +1016,11 @@
 
         <p>
           JavaScript's async patterns evolved to make asynchronous code easier to write, reason about, and debug.
+          Each milestone below has a dedicated, runnable JavaScript file in this folder:
         </p>
 
         <h3>1. The Callback Era & "Callback Hell"</h3>
+        <a href="callbackHell.js" class="inline-code-link">📄 Open Code: callbackHell.js</a>
         <p>In early JS, you passed functions as arguments. Chaining multiple dependent async steps led to nested pyramids of doom:</p>
 
         <pre><code><span class="code-comment">// ❌ Callback Hell: Hard to read, hard to catch errors, inversion of control</span>
@@ -935,6 +1035,7 @@
 });</code></pre>
 
         <h3>2. Promises (ES6, 2015)</h3>
+        <a href="promises.js" class="inline-code-link">📄 Open Code: promises.js (Includes all, allSettled, race, any)</a>
         <p>
           A <code>Promise</code> represents an operation that hasn't completed yet, but will in the future.
           It exists in one of three states: <code>pending</code>, <code>fulfilled</code> (resolved), or <code>rejected</code>.
@@ -949,6 +1050,7 @@
   .<span class="code-fn">catch</span>(error => <span class="code-fn">console</span>.<span class="code-fn">error</span>(<span class="code-str">"Failed along the way:"</span>, error));</code></pre>
 
         <h3>3. Async / Await (ES2017) — The Modern Standard</h3>
+        <a href="asyncAwait.js" class="inline-code-link">📄 Open Code: asyncAwait.js</a>
         <p>
           Built on top of Promises, <code>async/await</code> allows us to write asynchronous code that reads 
           like synchronous top-to-bottom code, using standard <code>try...catch</code> blocks:
@@ -966,6 +1068,14 @@
     <span class="code-keyword">throw</span> err;
   }
 }</code></pre>
+
+        <div class="callout callout-info" style="margin-top: 24px;">
+          <div class="callout-title">⚖️ Full Architectural Comparison</div>
+          <p style="margin-bottom: 0;">
+            Want to see how all three approaches handle the exact same 4-step e-commerce pipeline side-by-side with an interactive comparison runner?
+            Check out the dedicated <a href="drawbacks.html" style="color: var(--accent-primary); font-weight: 700;">drawbacks.html</a> guide.
+          </p>
+        </div>
       </div>
     </section>
 

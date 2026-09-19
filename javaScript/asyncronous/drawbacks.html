@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asynchronous Evolution: Drawbacks of Callbacks & Promises & How Async/Await Resolves Them</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --bg-surface: #111726;
+      --bg-surface-elevated: #192237;
+      --border: #232f48;
+      --border-bright: #3b4d75;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent-cb: #f43f5e;
+      --accent-cb-soft: rgba(244, 63, 94, 0.12);
+      --accent-promise: #38bdf8;
+      --accent-promise-soft: rgba(56, 189, 248, 0.12);
+      --accent-async: #10b981;
+      --accent-async-soft: rgba(16, 185, 129, 0.12);
+      --code-bg: #0b1120;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4), 0 2px 6px -1px rgba(0, 0, 0, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      line-height: 1.65;
+      padding-bottom: 90px;
+    }
+
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header */
+    header {
+      padding: 55px 0 35px;
+      text-align: center;
+    }
+
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 14px;
+      border-radius: 9999px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--accent-async);
+      font-size: 0.84rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 4.5vw, 3.1rem);
+      font-weight: 800;
+      line-height: 1.18;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #ffffff 40%, #94a3b8 75%, #10b981 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .lead-text {
+      max-width: 820px;
+      margin: 0 auto 24px;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    /* Quick Links Bar */
+    .file-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+
+    .file-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      text-decoration: none;
+      font-size: 0.86rem;
+      font-family: 'Fira Code', monospace;
+      transition: all 0.2s;
+    }
+
+    .file-chip:hover {
+      border-color: var(--accent-promise);
+      background: var(--bg-surface-elevated);
+      transform: translateY(-1px);
+    }
+
+    /* Sections & Cards */
+    section {
+      margin-bottom: 48px;
+    }
+
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 34px;
+      box-shadow: var(--shadow);
+    }
+
+    .section-tag {
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 24px 0 10px;
+      color: #f8fafc;
+    }
+
+    p {
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      font-size: 1rem;
+    }
+
+    p strong {
+      color: #f1f5f9;
+    }
+
+    /* Side-by-side tabs */
+    .tab-nav {
+      display: flex;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+      margin-bottom: 20px;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 8px 18px;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      background: var(--bg-surface-elevated);
+      color: #ffffff;
+    }
+
+    .tab-btn.active-cb {
+      background: var(--accent-cb-soft);
+      border-color: var(--accent-cb);
+      color: var(--accent-cb);
+    }
+
+    .tab-btn.active-prom {
+      background: var(--accent-promise-soft);
+      border-color: var(--accent-promise);
+      color: var(--accent-promise);
+    }
+
+    .tab-btn.active-async {
+      background: var(--accent-async-soft);
+      border-color: var(--accent-async);
+      color: var(--accent-async);
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+    .tab-content.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Code styling */
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      overflow-x: auto;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: #cbd5e1;
+      margin: 16px 0;
+    }
+
+    code {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.88em;
+      background: rgba(56, 189, 248, 0.08);
+      color: #7dd3fc;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    pre code {
+      background: transparent;
+      padding: 0;
+      border: none;
+      color: inherit;
+    }
+
+    .code-comment { color: #64748b; font-style: italic; }
+    .code-kw { color: #f43f5e; font-weight: 600; }
+    .code-fn { color: #60a5fa; }
+    .code-str { color: #34d399; }
+    .code-num { color: #fbbf24; }
+    .code-err { color: #f87171; }
+
+    /* Visual Drawback Cards Grid */
+    .drawback-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 18px;
+      margin: 22px 0;
+    }
+
+    .drawback-card {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 22px;
+      position: relative;
+    }
+
+    .drawback-card.danger {
+      border-left: 4px solid var(--accent-cb);
+    }
+
+    .drawback-card.warning {
+      border-left: 4px solid var(--accent-promise);
+    }
+
+    .drawback-card.success {
+      border-left: 4px solid var(--accent-async);
+    }
+
+    .drawback-card h4 {
+      font-size: 1.05rem;
+      color: #ffffff;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .drawback-card p {
+      font-size: 0.9rem;
+      margin-bottom: 0;
+      color: var(--text-muted);
+    }
+
+    /* Comparison Table */
+    .table-container {
+      overflow-x: auto;
+      margin: 24px 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      text-align: left;
+    }
+
+    th {
+      background: var(--bg-surface-elevated);
+      padding: 14px 18px;
+      font-weight: 700;
+      color: #f8fafc;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-muted);
+      vertical-align: top;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+    .tag-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .tag-bad { background: rgba(244, 63, 94, 0.15); color: #fb7185; }
+    .tag-mid { background: rgba(56, 189, 248, 0.15); color: #7dd3fc; }
+    .tag-good { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+
+    /* Interactive Live Runner Box */
+    .interactive-runner {
+      background: var(--code-bg);
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin-top: 24px;
+    }
+
+    .runner-controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .btn {
+      padding: 9px 18px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    .btn-cb { background: var(--accent-cb); color: #fff; }
+    .btn-prom { background: var(--accent-promise); color: #04101e; }
+    .btn-async { background: var(--accent-async); color: #04101e; }
+    .btn-cb:hover, .btn-prom:hover, .btn-async:hover { filter: brightness(1.15); transform: translateY(-1px); }
+
+    .terminal {
+      background: #060911;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.84rem;
+      min-height: 140px;
+      max-height: 240px;
+      overflow-y: auto;
+      color: #38bdf8;
+    }
+
+    .term-line {
+      margin-bottom: 6px;
+      display: flex;
+      gap: 8px;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 50px;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <header>
+      <div class="pill-badge">Evolution & Architecture Analysis</div>
+      <h1>The Asynchronous Evolution</h1>
+      <p class="lead-text">
+        From Callback Hell to Promises, and why Async/Await triumphed as the ultimate design pattern in modern JavaScript and React.
+      </p>
+
+      <div class="file-bar">
+        <a href="intro.html" class="file-chip">📄 intro.html (Deep Guide)</a>
+        <a href="callbackHell.js" class="file-chip">📜 callbackHell.js</a>
+        <a href="promises.js" class="file-chip">📜 promises.js</a>
+        <a href="asyncAwait.js" class="file-chip">📜 asyncAwait.js</a>
+      </div>
+    </header>
+
+    <!-- TABBED CODE COMPARISON -->
+    <section>
+      <div class="card">
+        <span class="section-tag" style="color: var(--accent-promise);">Side-By-Side Implementation</span>
+        <h2>1. The Same E-Commerce Workflow in All Three Paradigms</h2>
+        <p>
+          Compare the exact same 4-step sequence: <code>placeOrder</code> &rarr; <code>processPayment</code> &rarr; <code>prepareFood</code> &rarr; <code>assignDelivery</code>.
+        </p>
+
+        <div class="tab-nav">
+          <button class="tab-btn active-cb" id="tab-btn-cb" onclick="switchTab('cb')">1. Callback Hell (Pyramid)</button>
+          <button class="tab-btn" id="tab-btn-prom" onclick="switchTab('prom')">2. Promises (.then chain)</button>
+          <button class="tab-btn" id="tab-btn-async" onclick="switchTab('async')">3. Async / Await (The Winner)</button>
+        </div>
+
+        <!-- TAB 1: CALLBACK HELL -->
+        <div class="tab-content active" id="tab-cb">
+          <pre><code><span class="code-comment">// ❌ CALLBACK HELL: Rightward pyramid drift, fragmented error handling</span>
+<span class="code-fn">placeOrder</span>(<span class="code-str">"Paneer Butter Masala"</span>, <span class="code-kw">function</span> (err1, order) {
+  <span class="code-kw">if</span> (err1) <span class="code-kw">return</span> <span class="code-fn">handleError</span>(err1);
+
+  <span class="code-fn">processPayment</span>(order, <span class="code-kw">function</span> (err2, payment) {
+    <span class="code-kw">if</span> (err2) <span class="code-kw">return</span> <span class="code-fn">handleError</span>(err2);
+
+    <span class="code-fn">prepareFood</span>(order, payment, <span class="code-kw">function</span> (err3, pkg) {
+      <span class="code-kw">if</span> (err3) <span class="code-kw">return</span> <span class="code-fn">handleError</span>(err3);
+
+      <span class="code-fn">assignDelivery</span>(pkg, <span class="code-kw">function</span> (err4, delivery) {
+        <span class="code-kw">if</span> (err4) <span class="code-kw">return</span> <span class="code-fn">handleError</span>(err4);
+
+        <span class="code-fn">console</span>.<span class="code-fn">log</span>(<span class="code-str">`Delivered in ${delivery.eta}!`</span>);
+      });
+    });
+  });
+});</code></pre>
+        </div>
+
+        <!-- TAB 2: PROMISES -->
+        <div class="tab-content" id="tab-prom">
+          <pre><code><span class="code-comment">// ⚠️ PROMISES: Flattened pyramid and centralized catch, but scope gymnastics</span>
+<span class="code-fn">placeOrder</span>(<span class="code-str">"Paneer Butter Masala"</span>)
+  .<span class="code-fn">then</span>((order) => {
+    <span class="code-kw">return</span> <span class="code-fn">processPayment</span>(order); <span class="code-comment">// Must pass both order + payment down</span>
+  })
+  .<span class="code-fn">then</span>((orderData) => {
+    <span class="code-kw">return</span> <span class="code-fn">prepareFood</span>(orderData);
+  })
+  .<span class="code-fn">then</span>((finalData) => {
+    <span class="code-kw">return</span> <span class="code-fn">assignDelivery</span>(finalData);
+  })
+  .<span class="code-fn">then</span>((delivery) => {
+    <span class="code-fn">console</span>.<span class="code-fn">log</span>(<span class="code-str">`Delivered in ${delivery.eta}!`</span>);
+  })
+  .<span class="code-fn">catch</span>((err) => {
+    <span class="code-fn">console</span>.<span class="code-fn">error</span>(<span class="code-str">"Order pipeline failed:"</span>, err.message);
+  });</code></pre>
+        </div>
+
+        <!-- TAB 3: ASYNC / AWAIT -->
+        <div class="tab-content" id="tab-async">
+          <pre><code><span class="code-comment">// ✅ ASYNC / AWAIT: Perfectly linear, natural scoping, native try/catch</span>
+<span class="code-kw">async function</span> <span class="code-fn">handleOrder</span>(item) {
+  <span class="code-kw">try</span> {
+    <span class="code-kw">const</span> order    = <span class="code-kw">await</span> <span class="code-fn">placeOrder</span>(item);
+    <span class="code-kw">const</span> payment  = <span class="code-kw">await</span> <span class="code-fn">processPayment</span>(order);
+    <span class="code-kw">const</span> pkg      = <span class="code-kw">await</span> <span class="code-fn">prepareFood</span>(order.item);
+    <span class="code-kw">const</span> delivery = <span class="code-kw">await</span> <span class="code-fn">assignDelivery</span>(pkg.packageId, order.isExpress);
+
+    <span class="code-fn">console</span>.<span class="code-fn">log</span>(<span class="code-str">`Delivered in ${delivery.eta}!`</span>);
+  } <span class="code-kw">catch</span> (err) {
+    <span class="code-fn">console</span>.<span class="code-fn">error</span>(<span class="code-str">"Order pipeline failed:"</span>, err.message);
+  } <span class="code-kw">finally</span> {
+    <span class="code-fn">console</span>.<span class="code-fn">log</span>(<span class="code-str">"Order session closed."</span>);
+  }
+}</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: THE DRAWBACKS OF CALLBACKS -->
+    <section>
+      <div class="card">
+        <span class="section-tag" style="color: var(--accent-cb);">Phase 1 Critical Analysis</span>
+        <h2>2. Deep Dive: Drawbacks of Callbacks</h2>
+        <p>
+          Callbacks were the original asynchronous mechanism in JavaScript. As applications grew from simple button clicks to complex asynchronous pipelines, they revealed fatal architectural flaws:
+        </p>
+
+        <div class="drawback-grid">
+          <div class="drawback-card danger">
+            <h4>💥 The Pyramid of Doom</h4>
+            <p>
+              Code moves horizontally across the screen. Deep indentation makes logic difficult to parse, refactor, and reason about.
+            </p>
+          </div>
+
+          <div class="drawback-card danger">
+            <h4>🎭 Inversion of Control</h4>
+            <p>
+              When passing a callback to third-party code (analytics, payment SDKs), you surrender control: you cannot guarantee it won't be called twice, never called, or called with corrupted state.
+            </p>
+          </div>
+
+          <div class="drawback-card danger">
+            <h4>🚨 Repetitive Error Handling</h4>
+            <p>
+              Node.js error-first convention requires writing <code>if (err)</code> checks at every level. Forgetting one check leads to silent unhandled failures.
+            </p>
+          </div>
+
+          <div class="drawback-card danger">
+            <h4>🧠 Closure & Memory Traps</h4>
+            <p>
+              Every nested callback retains references to the scopes of all parent closures, making memory leaks and variable shadowing frequent bugs.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: THE DRAWBACKS OF PROMISES -->
+    <section>
+      <div class="card">
+        <span class="section-tag" style="color: var(--accent-promise);">Phase 2 Critical Analysis</span>
+        <h2>3. Promises Solved Callbacks — But Left New Drawbacks</h2>
+        <p>
+          ES6 Promises fixed the Pyramid of Doom and inverted control by returning immutable Promise objects. However, Promises introduced their own pain points:
+        </p>
+
+        <div class="drawback-grid">
+          <div class="drawback-card warning">
+            <h4>📦 The Intermediate Scope Dilemma</h4>
+            <p>
+              In a <code>.then()</code> chain, variable <code>order</code> declared in step 1 is inaccessible in step 4 unless you artificially pack and pass bloated objects down the entire chain.
+            </p>
+          </div>
+
+          <div class="drawback-card warning">
+            <h4>🔀 Clumsy Conditional Branching</h4>
+            <p>
+              Writing an <code>if (condition)</code> that skips two steps in a <code>.then()</code> chain requires returning dummy promises or re-nesting `.then()` blocks inside `.then()`!
+            </p>
+          </div>
+
+          <div class="drawback-card warning">
+            <h4>🧩 Still Callback-Based Syntax</h4>
+            <p>
+              You still have to pass arrow callbacks inside <code>.then(data => ...)</code>, leading to bracket clutter and verbose chaining boilerplate.
+            </p>
+          </div>
+
+          <div class="drawback-card warning">
+            <h4>🐛 Cryptic Stack Traces</h4>
+            <p>
+              When an error occurs in a deeply chained promise, error stack traces often point to the microtask event loop internals rather than the line of your business code.
+            </p>
+          </div>
+        </div>
+
+        <h3 style="margin-top: 30px;">Promise Static Combinator Cheat-Sheet</h3>
+        <p>JavaScript provides 4 static combinators for coordinating multiple concurrent promises:</p>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Behavior</th>
+                <th>Rejection Condition</th>
+                <th>Primary Use Case</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>Promise.all([p1, p2])</code></td>
+                <td>Waits for <strong>ALL</strong> promises to fulfill.</td>
+                <td><strong>Fails fast:</strong> Rejects immediately if ANY promise rejects.</td>
+                <td>Loading critical co-dependent data (e.g., User Profile + Permissions).</td>
+              </tr>
+              <tr>
+                <td><code>Promise.allSettled([p1, p2])</code></td>
+                <td>Waits for <strong>ALL</strong> promises to settle (resolve or reject).</td>
+                <td><strong>Never rejects:</strong> Always returns an array of status/value objects.</td>
+                <td>Bulk independent jobs (e.g., sending 100 emails, tracking analytics).</td>
+              </tr>
+              <tr>
+                <td><code>Promise.race([p1, p2])</code></td>
+                <td>Settles as soon as the <strong>FIRST</strong> promise settles.</td>
+                <td>Rejects if the fastest promise rejects.</td>
+                <td>Request timeouts (racing a network request against a timer).</td>
+              </tr>
+              <tr>
+                <td><code>Promise.any([p1, p2])</code></td>
+                <td>Resolves as soon as the <strong>FIRST</strong> promise succeeds.</td>
+                <td>Only rejects if <strong>ALL</strong> fail (AggregateError).</td>
+                <td>Redundant CDN endpoints, mirrors, fastest cache lookup.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: HOW ASYNC / AWAIT RESOLVES EVERYTHING -->
+    <section>
+      <div class="card" style="border-color: rgba(16, 185, 129, 0.35);">
+        <span class="section-tag" style="color: var(--accent-async);">The Modern Resolution</span>
+        <h2>4. How Async / Await Resolves All Drawbacks</h2>
+        <p>
+          Introduced in ES2017, <code>async/await</code> is built on Promises, but pairs asynchronous capability with JavaScript's native synchronous syntax and lexical scoping:
+        </p>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Criteria</th>
+                <th>Callbacks</th>
+                <th>Promises (.then)</th>
+                <th>Async / Await (Modern Standard)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Code Structure</strong></td>
+                <td><span class="tag-badge tag-bad">Deep Nesting</span> (Pyramid)</td>
+                <td><span class="tag-badge tag-mid">Vertical Chaining</span></td>
+                <td><span class="tag-badge tag-good">Flat Sequential</span> (Reads line-by-line)</td>
+              </tr>
+              <tr>
+                <td><strong>Variable Scoping</strong></td>
+                <td><span class="tag-badge tag-bad">Nested Closures</span></td>
+                <td><span class="tag-badge tag-bad">Pass-down Gymnastics</span></td>
+                <td><span class="tag-badge tag-good">Shared Function Scope</span> (All variables alive)</td>
+              </tr>
+              <tr>
+                <td><strong>Error Handling</strong></td>
+                <td><span class="tag-badge tag-bad">Manual <code>if (err)</code> at every tier</span></td>
+                <td><span class="tag-badge tag-mid">Single <code>.catch()</code> block</span></td>
+                <td><span class="tag-badge tag-good">Standard <code>try...catch...finally</code></span></td>
+              </tr>
+              <tr>
+                <td><strong>Conditionals & Loops</strong></td>
+                <td><span class="tag-badge tag-bad">Brutal Nesting</span></td>
+                <td><span class="tag-badge tag-mid">Awkward Promise Trees</span></td>
+                <td><span class="tag-badge tag-good">Native <code>if/else</code>, <code>for...of</code></span></td>
+              </tr>
+              <tr>
+                <td><strong>Debugging & Breakpoints</strong></td>
+                <td><span class="tag-badge tag-bad">Jumps erratically across files</span></td>
+                <td><span class="tag-badge tag-mid">Stepping inside anonymous arrows</span></td>
+                <td><span class="tag-badge tag-good">Line-by-line stepping & exact stack traces</span></td>
+              </tr>
+              <tr>
+                <td><strong>React Ecosystem</strong></td>
+                <td><span class="tag-badge tag-bad">Unusable with hooks</span></td>
+                <td><span class="tag-badge tag-mid">Prone to unmounted race bugs</span></td>
+                <td><span class="tag-badge tag-good">Standard in React Query, useEffect, Server Actions</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: LIVE RUNNER DEMO -->
+    <section>
+      <div class="card">
+        <span class="section-tag" style="color: var(--accent-promise);">Live Test Sandbox</span>
+        <h2>5. Interactive Live Comparison Runner</h2>
+        <p>Run all three asynchronous workflows directly in your browser and compare the execution flow:</p>
+
+        <div class="interactive-runner">
+          <div class="runner-controls">
+            <button class="btn btn-cb" onclick="runDemo('cb')">▶ Run Callback Hell Flow</button>
+            <button class="btn btn-prom" onclick="runDemo('prom')">▶ Run Promise Chain Flow</button>
+            <button class="btn btn-async" onclick="runDemo('async')">▶ Run Async/Await Flow</button>
+            <button class="btn" style="background: var(--bg-surface-elevated); color: #fff;" onclick="clearTerminal()">Clear</button>
+          </div>
+
+          <div class="terminal" id="term">
+            <div class="term-line">
+              <span style="color: #64748b;">[System Ready]</span>
+              <span>Select an asynchronous paradigm above to inspect its execution in real-time...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>JavaScript Asynchronous Mastery &bull; Explore [callbackHell.js], [promises.js], [asyncAwait.js] &bull; Open DevTools (F12)</p>
+    </footer>
+
+  </div>
+
+  <script>
+    // Tab switching logic
+    function switchTab(type) {
+      document.getElementById('tab-cb').classList.remove('active');
+      document.getElementById('tab-prom').classList.remove('active');
+      document.getElementById('tab-async').classList.remove('active');
+
+      const btnCb = document.getElementById('tab-btn-cb');
+      const btnProm = document.getElementById('tab-btn-prom');
+      const btnAsync = document.getElementById('tab-btn-async');
+
+      btnCb.className = 'tab-btn';
+      btnProm.className = 'tab-btn';
+      btnAsync.className = 'tab-btn';
+
+      if (type === 'cb') {
+        document.getElementById('tab-cb').classList.add('active');
+        btnCb.className = 'tab-btn active-cb';
+      } else if (type === 'prom') {
+        document.getElementById('tab-prom').classList.add('active');
+        btnProm.className = 'tab-btn active-prom';
+      } else {
+        document.getElementById('tab-async').classList.add('active');
+        btnAsync.className = 'tab-btn active-async';
+      }
+    }
+
+    // Terminal runner logic
+    const term = document.getElementById('term');
+
+    function logTerm(tag, message, color = '#38bdf8') {
+      const line = document.createElement('div');
+      line.className = 'term-line';
+      const time = new Date().toLocaleTimeString();
+      line.innerHTML = `<span style="color: #64748b;">[${time}]</span> <strong style="color: ${color};">[${tag}]</strong> <span>${message}</span>`;
+      term.appendChild(line);
+      term.scrollTop = term.scrollHeight;
+    }
+
+    function clearTerminal() {
+      term.innerHTML = `<div class="term-line"><span style="color: #64748b;">[System Ready]</span><span>Terminal reset.</span></div>`;
+    }
+
+    function runDemo(type) {
+      clearTerminal();
+
+      if (type === 'cb') {
+        logTerm('CALLBACK', 'Initiating nested callback chain...', '#f43f5e');
+        setTimeout(() => {
+          logTerm('CALLBACK', 'Step 1: Order placed for Paneer Butter Masala (1000ms)', '#f43f5e');
+          setTimeout(() => {
+            logTerm('CALLBACK', 'Step 2: Payment ₹250 processed (nested 1)', '#f43f5e');
+            setTimeout(() => {
+              logTerm('CALLBACK', 'Step 3: Chef prepared food (nested 2)', '#f43f5e');
+              setTimeout(() => {
+                logTerm('CALLBACK', 'Step 4: Delivery dispatched (nested 3)', '#f43f5e');
+                logTerm('SUCCESS', 'Order fulfilled using deeply nested pyramid.', '#f43f5e');
+              }, 600);
+            }, 600);
+          }, 600);
+        }, 600);
+
+      } else if (type === 'prom') {
+        logTerm('PROMISE', 'Initiating Promise.then() pipeline...', '#38bdf8');
+        
+        const delay = (msg) => new Promise(res => setTimeout(() => { logTerm('PROMISE', msg, '#38bdf8'); res(); }, 600));
+
+        delay('Step 1: Order placed for Paneer Butter Masala')
+          .then(() => delay('Step 2: Payment ₹250 processed'))
+          .then(() => delay('Step 3: Chef prepared food'))
+          .then(() => delay('Step 4: Delivery dispatched'))
+          .then(() => logTerm('SUCCESS', 'Order fulfilled using .then() chaining.', '#38bdf8'))
+          .catch(err => logTerm('ERROR', err.message, '#f87171'));
+
+      } else if (type === 'async') {
+        logTerm('ASYNC/AWAIT', 'Initiating async/await sequential execution...', '#10b981');
+        
+        const delay = (msg) => new Promise(res => setTimeout(() => { logTerm('ASYNC/AWAIT', msg, '#10b981'); res(); }, 600));
+
+        (async () => {
+          try {
+            await delay('Step 1: Order placed (Clean local scope: const order)');
+            await delay('Step 2: Payment processed (Accesses order directly)');
+            await delay('Step 3: Chef prepared food (Accesses order.item directly)');
+            await delay('Step 4: Delivery assigned (Accesses order.isExpress directly)');
+            logTerm('SUCCESS', 'Order fulfilled cleanly! Zero pyramid, unified try/catch.', '#10b981');
+          } catch (err) {
+            logTerm('ERROR', err.message, '#f87171');
+          }
+        })();
+      }
+    }
+  </script>
+</body>
+</html>
